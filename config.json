@@ -1,0 +1,7 @@
+{
+    "authToken": "",
+    "raspUpdateInterval": 300,
+    "groupsUpdateInterval": 3600,
+    "autoBackupInterval": 900,
+    "backup-folder": "./database/backup"
+}
