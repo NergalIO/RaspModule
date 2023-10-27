@@ -1,7 +1,7 @@
 {
-    "authToken": "",
+    "authToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYXJ0eW9ta3VkcmV2YXR5eEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zdXJuYW1lIjoi0JrRg9C00YDQtdCy0LDRgtGL0YUg0JAu0JAuIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvc2lkIjoiLTM0NzMyNCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2hhc2giOiIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3VzZXJkYXRhIjoiMiIsIm5iZiI6MTY5ODM0NTM3MCwiZXhwIjoxNjk4OTUwMTcwLCJpc3MiOiJWZWRLYWYiLCJhdWQiOiJNTUlTTGFiIn0.UUhE2BRlyu7E1fMfn4-GwPaldxYXV2TCtq4DypZjDDg",
     "raspUpdateInterval": 300,
     "groupsUpdateInterval": 3600,
-    "autoBackupInterval": 900,
-    "backup-folder": "./database/backup"
+    "autoBackupInterval": 300,
+    "backup-folder": "./RaspModule/database/backup"
 }

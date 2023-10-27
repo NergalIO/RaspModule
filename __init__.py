@@ -1,8 +1,9 @@
+import RaspModule.api as api
 import threading
 import logging
 import json
 import time
-import api
+
 
 FORMAT = '%(asctime)s - (%(levelname)s) [%(name)s] %(message)s'
 DATEFMT = '%Y-%m-%d %H:%M:%S'
@@ -39,6 +40,8 @@ class RaspManager:
             )
             exit(1)
 
+        self._update_groups()
+    
         self.logger.info("Запуск потока обновления расписания")
         try:
             self.update_rasp_thread = threading.Thread(
@@ -49,16 +52,16 @@ class RaspManager:
             self.logger.error(f'При запуске потока произошла ошибка: {error}')
             exit(1)
 
-        self.logger.info("Запуск потока обновления команд")
-        try:
-            self.update_groups_thread = threading.Thread(
-                target=self._update_groups,
-                args=(self.config['groupsUpdateInterval'], ))
-            self.update_groups_thread.start()
-        except Exception as error:
-            self.logger.error(f'При запуске потока произошла ошибка: {error}')
-            exit(1)
-        self.logger.info("Модуль расписания успешно запущен!")
+        #self.logger.info("Запуск потока обновления команд")
+        #try:
+        #    self.update_groups_thread = threading.Thread(
+        #        target=self._update_groups,
+        #        args=(self.config['groupsUpdateInterval'], ))
+        #    self.update_groups_thread.start()
+        #except Exception as error:
+        #    self.logger.error(f'При запуске потока произошла ошибка: {error}')
+        #    exit(1)
+        
 
         self.logger.info("Запуск потока автомотического бекапа базы данных")
         try:
@@ -69,6 +72,7 @@ class RaspManager:
         except Exception as error:
             self.logger.error(f'При запуске потока произошла ошибка: {error}')
             exit(1)
+        self.logger.info("Модуль расписания успешно запущен!")
 
     def get_rasp_for_student(self, id: str, day: int = 0) -> list[tuple]:
         return self.database.get_rasp_for_user(id, day)
@@ -84,8 +88,8 @@ class RaspManager:
 
     def _auto_backup(self, interval: int) -> None:
         while True:
-            self.database.save()
             time.sleep(interval)
+            self.database.save()
 
     def _update_rasp(self, interval: int) -> None:
         while True:
@@ -121,28 +125,20 @@ class RaspManager:
                 )
             time.sleep(interval)
 
-    def _update_groups(self, interval: int) -> None:
-        while True:
-            self.logger.info("Обновление команд...")
-            try:
-                commands = self.dstu.get_all_commands()
+    def _update_groups(self) -> None:
+        self.logger.info("Обновление команд...")
+        #try:
+        commands = self.dstu.get_all_commands()
 
-                data = {}
-                for id in commands:
-                    students = self.dstu.get_students_from_command(id)
-                    data[id] = students
+        for id, students in self.dstu.get_students_from_commands(commands):
+            students = [student['name'] for student in students]
+            self.database.insert_group(id, students)
 
-                self.database.clear_table("groups")
-                for id, students in data.items():
-                    self.database.insert_group(id, students)
-
-                self.logger.info("Команды обновлены!")
-            except Exception as error:
-                self.logger.warning(
-                    f"Неудалось получить новый список команд! Ошибка: {error}")
-
-            time.sleep(interval)
+        self.logger.info("Команды обновлены!")
+        #except Exception as error:
+        #    self.logger.warning(
+        #        f"Неудалось обновить список команд! Ошибка: {error}")
 
 
 if __name__ == "__main__":
-    RaspManager("config.json")
+    rasp = RaspManager("RaspModule/config.json")

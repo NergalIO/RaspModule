@@ -1,9 +1,13 @@
-import handlers.date as date
+import RaspModule.handlers.date as date
+import concurrent.futures as futures
 import requests
+import aiohttp
+import asyncio
 
+from asgiref import sync
 
 def fetch_json(url: str, headers: dict = None, *args, **kwargs) -> dict:
-    return requests.get(url, headers=headers, *args, **kwargs).json()
+    return requests.get(url, headers=headers, timeout=5, *args, **kwargs).json()
 
 
 class DstuManager:
@@ -24,6 +28,19 @@ class DstuManager:
         return fetch_json(
             f"https://edu.donstu.ru/api/UserInfo/GroupInfo?groupID={id}",
         )
+    
+    def get_students_from_commands(self, ids: list[int]) -> list[list[str]]: 
+        urls = [f"https://edu.donstu.ru/api/GroupManager/StudentsExport?groupID={id}" for id in ids]
+        async def get_all(urls):
+            async with aiohttp.ClientSession() as session:
+                async def fetch(url):
+                    async with session.get(url, headers={"Cookie": f"authToken={self.authToken}"}) as response:
+                        return [url.split("=")[1], (await response.json())['data']['students']]
+                return await asyncio.gather(*[
+                    fetch(url) for url in urls
+                ])
+        return sync.async_to_sync(get_all)(urls)
+
 
     def get_students_from_command(self, id: int) -> list[str]:
         return [student['name'] for student in fetch_json(

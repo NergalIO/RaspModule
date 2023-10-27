@@ -1,6 +1,7 @@
-from database import DatabaseManager
+from RaspModule.database import DatabaseManager
+import RaspModule.dstu as dstu
 import logging
-import dstu
+
 
 FORMAT = '%(asctime)s - (%(levelname)s) [%(name)s] %(message)s'
 DATEFMT = '%Y-%m-%d %H:%M:%S'
@@ -30,6 +31,9 @@ class DstuAPI:
                 if command_id not in commands:
                     commands.append(command_id)
         return commands
+
+    def get_students_from_commands(self, ids: list[int]) -> list[str]:
+        return self.manager.get_students_from_commands(ids)
 
     def get_students_from_command(self, id: str) -> list[str]:
         return self.manager.get_students_from_command(id)
