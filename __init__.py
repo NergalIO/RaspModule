@@ -73,6 +73,12 @@ class RaspManager:
     def get_rasp_for_student(self, id: str, day: int = 0) -> list[tuple]:
         return self.database.get_rasp_for_user(id, day)
 
+    def register_user(self, id: str, fullname: str) -> None:
+        self.database.register_user(id, fullname)
+    
+    def check_user(self, id: str) -> bool:
+        return self.database.check_user(id)
+
     def _auto_backup(self, interval: int) -> None:
         while True:
             self.database.save()
