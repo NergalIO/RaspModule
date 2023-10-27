@@ -1,5 +1,4 @@
 import RaspModule.handlers.date as date
-import concurrent.futures as futures
 import requests
 import aiohttp
 import asyncio
@@ -7,7 +6,7 @@ import asyncio
 from asgiref import sync
 
 def fetch_json(url: str, headers: dict = None, *args, **kwargs) -> dict:
-    return requests.get(url, headers=headers, timeout=5, *args, **kwargs).json()
+    return requests.get(url, headers=headers, timeout=20, *args, **kwargs).json()
 
 
 class DstuManager:

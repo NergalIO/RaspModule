@@ -4,7 +4,6 @@ import logging
 import json
 import time
 
-
 FORMAT = '%(asctime)s - (%(levelname)s) [%(name)s] %(message)s'
 DATEFMT = '%Y-%m-%d %H:%M:%S'
 
@@ -123,21 +122,22 @@ class RaspManager:
                 self.logger.warning(
                     f"При обновлении расписании произошла ошибка: {error}"
                 )
+            self.database.save()
             time.sleep(interval)
 
     def _update_groups(self) -> None:
         self.logger.info("Обновление команд...")
-        #try:
-        commands = self.dstu.get_all_commands()
+        try:
+            commands = self.dstu.get_all_commands()
 
-        for id, students in self.dstu.get_students_from_commands(commands):
-            students = [student['name'] for student in students]
-            self.database.insert_group(id, students)
+            for id, students in self.dstu.get_students_from_commands(commands):
+                students = [student['name'] for student in students]
+                self.database.insert_group(id, students)
 
-        self.logger.info("Команды обновлены!")
-        #except Exception as error:
-        #    self.logger.warning(
-        #        f"Неудалось обновить список команд! Ошибка: {error}")
+            self.logger.info("Команды обновлены!")
+        except Exception as error:
+            self.logger.warning(
+                f"Неудалось обновить список команд! Ошибка: {error}")
 
 
 if __name__ == "__main__":

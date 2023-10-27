@@ -1,7 +1,10 @@
 from RaspModule.database import DatabaseManager
 import RaspModule.dstu as dstu
 import logging
+import asyncio
+import numpy
 
+from asgiref import sync
 
 FORMAT = '%(asctime)s - (%(levelname)s) [%(name)s] %(message)s'
 DATEFMT = '%Y-%m-%d %H:%M:%S'
@@ -90,15 +93,27 @@ class DatabaseAPI:
             date = dstu.date.get_db_time("").split("T")[0]
         else:
             date = dstu.date.get_db_time_at_day(day, "").split("T")[0]
-
-        lessons = []
-        for id in user_groups:
-            for lesson in self.database.select('lessons'):
-                if lesson[4].split("T")[0] != date:
-                    continue
-                if id in lesson[6]:
-                    lessons.append(lesson)
-        return lessons
+        
+        lessons = self.database.select('lessons')
+        async def usage(ids):
+            async def fetch(id):
+                user_lessons = []
+                for lesson in lessons:
+                    if lesson[4].split("T")[0] != date:
+                        continue
+                    if id in lesson[6]:
+                        user_lessons.append(lesson)
+                return user_lessons
+            return await asyncio.gather(*[
+                fetch(id) for id in ids
+            ])
+            
+        result = []
+        for lesson in sync.async_to_sync(usage)(user_groups):
+            if lesson in result or len(lesson) == 0:
+                continue
+            result += lesson
+        return result
 
     def check_user_in_groups(self, fullname: str) -> bool:
         for id, students in self.database.select('groups'):
