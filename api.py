@@ -96,6 +96,12 @@ class DatabaseAPI:
                     lessons.append(lesson)
         return lessons
 
+    def check_user_in_groups(self, fullname: str) -> bool:
+        for id, students in self.database.select('groups'):
+            if fullname in students:
+                return True
+        return False
+
     def register_user(self, id: str, fullname: str) -> None:
         if not self.check_user(id):
             self.logger.debug(f"Регистрация пользователя -> id: {id}")

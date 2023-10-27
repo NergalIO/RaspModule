@@ -73,6 +73,9 @@ class RaspManager:
     def get_rasp_for_student(self, id: str, day: int = 0) -> list[tuple]:
         return self.database.get_rasp_for_user(id, day)
 
+    def check_user_in_groups(self, fullname: str) -> bool:
+        return self.database.check_user_in_groups(fullname)
+
     def register_user(self, id: str, fullname: str) -> None:
         self.database.register_user(id, fullname)
     
